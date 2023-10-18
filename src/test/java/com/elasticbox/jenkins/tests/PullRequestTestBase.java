@@ -48,8 +48,11 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -543,6 +546,26 @@ public class PullRequestTestBase extends BuildStepTestBase {
 
     private Document getProjectDocument(FreeStyleProject project) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        String FEATURE = null;
+        try {
+            FEATURE = "http://xml.org/sax/features/external-parameter-entities";
+            factory.setFeature(FEATURE, false);
+
+            FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+            factory.setFeature(FEATURE, false);
+
+            FEATURE = "http://xml.org/sax/features/external-general-entities";
+            factory.setFeature(FEATURE, false);
+
+            factory.setXIncludeAware(false);
+            factory.setExpandEntityReferences(false);
+
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+        } catch (ParserConfigurationException e) {
+            throw new IllegalStateException("The feature '"
+                    + FEATURE + "' is not supported by your XML processor.", e);
+        }
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(project.getConfigFile().getFile());
     }
@@ -567,6 +590,9 @@ public class PullRequestTestBase extends BuildStepTestBase {
     private void updateProject(FreeStyleProject project, Document document) throws Exception {
         DOMSource src = new DOMSource(document);
         TransformerFactory factory = TransformerFactory.newInstance();
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         Transformer transformer = factory.newTransformer();
         StreamResult result = new StreamResult();
         ByteArrayOutputStream out = new ByteArrayOutputStream();

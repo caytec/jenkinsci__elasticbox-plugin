@@ -43,6 +43,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
@@ -99,7 +100,7 @@ public class ElasticBoxSlave extends Slave {
             prefix += padding.toString();
         }
 
-        Random random = new Random();
+        Random random = new SecureRandom();
         String name;
         do {
             name = prefix + '-' + randomId(random);

@@ -19,6 +19,7 @@ import hudson.model.FreeStyleProject;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
@@ -59,7 +60,7 @@ public class UpdateBoxTest extends BuildStepTestBase {
         JSONObject variable = TestUtils.findVariable(variables, "VAR_FILE");
         Assert.assertNotNull(variable);
         Assert.assertNotNull("VAR_FILE is not updated", variable.getString("value"));
-        File file = File.createTempFile(testTag, null);
+        File file = Files.createTempFile(testTag, null).toFile();
         FileOutputStream fileOutput = new FileOutputStream(file);
         try {
             client.writeTo(variable.getString("value"), fileOutput);

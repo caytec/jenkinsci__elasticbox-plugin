@@ -22,6 +22,7 @@ import hudson.model.TaskListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -154,7 +155,7 @@ public class BuildStepTest extends BuildStepTestBase {
         JSONObject variable = TestUtils.findVariable(variables, "VAR_FILE");
         Assert.assertNotNull(variable);
         Assert.assertNotNull("VAR_FILE is not updated", variable.getString("value"));
-        File file = File.createTempFile(testTag, null);
+        File file = Files.createTempFile(testTag, null).toFile();
         FileOutputStream fileOutput = new FileOutputStream(file);
         try {
             client.writeTo(variable.getString("value"), fileOutput);
